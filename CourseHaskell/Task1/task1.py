@@ -1,23 +1,34 @@
 finalPaths = []
 
-def parseInput(stations, firstStation, lastStation, paths=[]):
+def findPath(stations, firstStation, lastStation, paths=[]):
 	paths.append(firstStation)
-	
 	for fromStation, toStation in stations:
-		print "trying: " + fromStation + " " + toStation
 		if fromStation == firstStation and toStation == lastStation:
 			paths.append(lastStation)
-			finalPaths.append(paths)
-			print str(paths)
+			return paths
 		elif fromStation == firstStation and toStation != lastStation:
-			print fromStation + " " + toStation
-			stations.remove((fromStation, toStation))
-			parseInput(stations, toStation, lastStation)
-			
+			copyStations = list(stations)
+ 			copyStations.remove((fromStation, toStation))
+ 			return findPath(copyStations, toStation, lastStation, paths)
+ 			
+ 	return None
+
+def parseInput(stations, firstStation, lastStation):
+	for fromStation, toStation in stations:
+		if fromStation == firstStation:
+			copyStations = list(stations)
+			copyStations.remove((fromStation, toStation))
+			copyStations.insert(0, (fromStation, toStation))
+			path = findPath(copyStations, fromStation, lastStation, [])
+
+			if path != None:
+				finalPaths.append(path)
+				
+				path = []
 
 def readInput():
 	stationsTuples = []
-
+	print "Input:"
 	while True:
 		stations = raw_input()
 
@@ -30,5 +41,7 @@ def readInput():
 	return stationsTuples
 
 parseInput(readInput(), "H", "L")
-print
-print finalPaths
+finalPaths.sort(lambda x,y: cmp(len(x), len(y)))
+
+print "Output:"
+print ' '.join(finalPaths[0])
